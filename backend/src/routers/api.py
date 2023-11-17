@@ -1,31 +1,18 @@
-from fastapi import FastAPI
+from fastapi import APIRouter
 
-app = FastAPI()
+router = APIRouter()
 
 games_data = [
-    {
-        'game_id': '1',
-        'max_players': 6,
-        'players': 5
-    },
-    {
-        'game_id': '2',
-        'max_players': 6,
-        'players': 3
-    }
+    {"game_id": "1", "max_players": 6, "players": 5},
+    {"game_id": "2", "max_players": 6, "players": 3},
+    {"game_id": "3", "max_players": 4, "players": 4},
 ]
 
-@app.get("/api/v1/games")
+
+@router.get("/api/v1/games")
 async def get_games(started: bool):
-    if started==False:
-        games = [
-            {
-                'game_id': game['game_id'],
-                'max_players': game['max_players'],
-                'players': game['players']
-            }
-            for game in games_data
-        ]
-        return {'games': games}
+    if started == False:
+        games = [game for game in games_data if game["players"] < game["max_players"]]
+        return {"games": games}
     else:
-        return {'message': 'all games has already started'}
+        return {"message": "all games has already started"}
