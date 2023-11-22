@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  api:
+    container_name: loveletter-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/src:/backend/
+    # restart: always
+
+  ui:
+    container_name: loveletter-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    # restart: always
+    volumes:
+      - ./frontend/src:/frontend/src/
+      - ./frontend/public:/frontend/public/
+      - ./frontend/index.html:/frontend/index.html
