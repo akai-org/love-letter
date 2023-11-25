@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import { GameState } from "../../types/Game";
 import { PlayerAction, PlayerActionPayload, RoomEvent, RoomEventListener, SocketStatus } from "../../types/Room";
 
-export interface RoomContextType {
+export interface GameContextType {
   /** Current game state */
   gameState: GameState;
   /** Method to set the game state */
@@ -17,7 +17,7 @@ export interface RoomContextType {
   send: <T extends PlayerAction>(action: T, payload: PlayerActionPayload<T>) => void;
 }
 
-export const initialroomContext: RoomContextType = {
+export const initialroomContext: GameContextType = {
   gameState: {
     id: "",
     name: "",
@@ -33,7 +33,7 @@ export const initialroomContext: RoomContextType = {
   send: () => { },
 };
 
-export const RoomContext = createContext<RoomContextType>(initialroomContext);
+export const GameContext = createContext<GameContextType>(initialroomContext);
 
 
 /**
@@ -46,8 +46,8 @@ export const RoomContext = createContext<RoomContextType>(initialroomContext);
  * const { gameState, setGameState, socketStatus, on, send } = useGame();
  */
 
-export function useGame(): RoomContextType {
-  const context = useContext(RoomContext);
+export function useGame(): GameContextType {
+  const context = useContext(GameContext);
   if (context === undefined) throw new Error("useGame must be used within a GameProvider");
   return context;
 }

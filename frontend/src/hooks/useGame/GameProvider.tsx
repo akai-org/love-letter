@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { RoomContext } from "./useRoomContext";
+import { GameContext } from "./useGameContext";
 import { GameState } from "../../types/Game";
 import useRoom from "./useRoom";
 
@@ -24,7 +24,7 @@ export function GameProvider({ children, roomID, clientID }: RoomProviderProps) 
 
   return (
     <>
-      <RoomContext.Provider
+      <GameContext.Provider
         value={{
           gameState: gameState,
           setGameState: setGameState,
@@ -34,7 +34,7 @@ export function GameProvider({ children, roomID, clientID }: RoomProviderProps) 
         }}
       >
         {children}
-      </RoomContext.Provider>
+      </GameContext.Provider>
     </>
   );
 }
