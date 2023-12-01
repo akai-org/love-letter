@@ -12,13 +12,13 @@ const initialGameState: GameState = {
   cards: [],
 };
 
-type RoomProviderProps = { roomID: string; clientID: string; children: ReactNode };
+type GameProviderProps = { roomID: string; clientID: string; children: ReactNode };
 
 /**
  * This is the top-level component for the Game. It provides the game state and
  * server status and functions to manage the server connection.
  */
-export function GameProvider({ children, roomID, clientID }: RoomProviderProps) {
+export function GameProvider({ children, roomID, clientID }: GameProviderProps) {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
   const { status, on, send } = useRoom(roomID, clientID, setGameState);
 

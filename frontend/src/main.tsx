@@ -8,16 +8,14 @@ import {
   Params,
 } from "react-router-dom";
 import "./index.css";
-import BrowserPage from "./Pages/BrowserPage.tsx";
-import LobbyPage from "./Pages/LobbyPage.tsx";
-import GamePage from "./Pages/GamePage.tsx";
+import BrowserPage from "./Pages/BrowserPage/BrowserPage.tsx";
+import RoomPage from "./Pages/RoomPage/RoomPage.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route path="/" element={<BrowserPage />} />
-      <Route path="/lobby" element={<LobbyPage />} />
-      <Route path="/game/:roomID/:clientID" element={<GamePage />} loader={GamePageLoader} />
+      <Route path="/game/:roomID/:clientID" loader={RoomPageLoader} element={<RoomPage />} />
     </Route>
   )
 );
@@ -28,6 +26,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>
 );
 
-export function GamePageLoader({ params }: { params: Params<string> }) {
+export function RoomPageLoader({ params }: { params: Params<string> }) {
   return { roomID: params.roomID, clientID: params.clientID };
 }
