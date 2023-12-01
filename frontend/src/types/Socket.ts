@@ -1,19 +1,16 @@
 
 import { GameState } from "./Game";
 import { PlayerAction, PlayerActionPayload } from "./PlayerActions";
-import { RoomEvent } from './RoomEvents';
+import { Event } from "./RoomEvents";
 
 // server status
 export type SocketStatus = "connected" | "disconnected";
 
 //websocket messages
 export interface FromRoomMessage {
-  event?: {
-    type: RoomEvent,
-    payload: Record<string, string>
-  },
+  events?: Event[];
 
-  state?: GameState
+  state?: GameState;
 }
 
 export interface ToRoomMessage<A extends PlayerAction> {

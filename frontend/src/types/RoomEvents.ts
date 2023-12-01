@@ -1,4 +1,8 @@
 
+export interface Event {
+  type: RoomEvent;
+  payload: string[];
+}
 
 // game events from server
 export const roomEvents = [
