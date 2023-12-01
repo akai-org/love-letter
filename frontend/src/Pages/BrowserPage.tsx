@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 // przykładowy komponent nie przywiązujmy się do niego
-function App() {
+export default function BrowserPage() {
   const [count, setCount] = useState(0);
 
   const handleCount = () => {
@@ -31,5 +31,3 @@ function App() {
     </>
   );
 }
-
-export default App;
