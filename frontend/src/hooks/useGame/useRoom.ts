@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { FromRoomMessage, PlayerAction, PlayerActionPayload, RoomEvent, RoomEventListener as RoomEventListener, RoomEventsListeners, SocketStatus, roomEvents } from "../../types/Room";
 import { GameState } from '../../types/Game';
+import { RoomEvent, RoomEventListener, RoomEventsListeners, roomEvents } from "../../types/RoomEvents";
+import { FromRoomMessage, SocketStatus } from "../../types/Socket";
+import { PlayerAction, PlayerActionPayload } from "../../types/PlayerActions";
 
 
 const initialEventsListeners = roomEvents.reduce((acc, event) => {

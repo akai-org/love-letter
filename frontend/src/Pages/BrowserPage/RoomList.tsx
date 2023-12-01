@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Room } from "../../types/Room";
 
-export default function RoomComponent(props: { room: Room }) {
-  const { room } = props;
+export default function RoomList(props: { rooms: Room[] }) {
+  const { rooms } = props;
 
   const navigate = useNavigate();
 
-  return (
+  return rooms.map((room) => (
     <div className="flex flex-row justify-between">
       <div className="flex flex-col">
         <h1 className="text-2xl font-bold">{room.game_id}</h1>
@@ -23,5 +23,5 @@ export default function RoomComponent(props: { room: Room }) {
         </button>
       </div>
     </div>
-  );
+  ));
 }

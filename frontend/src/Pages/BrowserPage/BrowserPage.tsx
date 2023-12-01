@@ -1,5 +1,5 @@
 import useRoomsList from "../../hooks/API/useRoomsList";
-import RoomComponent from "./RoomComponent";
+import RoomList from "./RoomList";
 
 // przykładowy komponent nie przywiązujmy się do niego
 export default function BrowserPage() {
@@ -23,7 +23,7 @@ export default function BrowserPage() {
         </section>
 
         <section className="flex flex-col justify-center mx-56 my-4 gap-y-2 h-56 overflow-scroll">
-          {roomsList && roomsList.map((s) => <RoomComponent key={s.game_id} room={s} />)}
+          {roomsList && <RoomList rooms={roomsList} />}
         </section>
       </div>
     </>

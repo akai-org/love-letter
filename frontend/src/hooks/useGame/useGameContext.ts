@@ -1,6 +1,8 @@
 import { createContext, useContext } from "react";
 import { GameState } from "../../types/Game";
-import { PlayerAction, PlayerActionPayload, RoomEvent, RoomEventListener, SocketStatus } from "../../types/Room";
+import { RoomEvent, RoomEventListener } from "../../types/RoomEvents";
+import { SocketStatus } from "../../types/Socket";
+import { PlayerAction, PlayerActionPayload } from "../../types/PlayerActions";
 
 export interface GameContextType {
   /** Current game state */
