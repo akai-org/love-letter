@@ -2,6 +2,8 @@ import random
 from enum import IntEnum
 from queue import PriorityQueue
 
+from custom_types import GameStatus
+
 
 class Card(IntEnum):
     ZERO_SPY = 0
@@ -57,7 +59,7 @@ class Game:
         self.players: list[Player] = []
         self.max_players: int = num_players
         self.player_counter: int = 0
-        self.status: str = "not_started"
+        self.status: GameStatus = GameStatus.NOT_STARTED
         self.name: str = name
         self._remaining_cards: PriorityQueue = PriorityQueue()
 
@@ -84,9 +86,9 @@ class Game:
                 break
 
     def add_new_player(self, name: str) -> None:
-        if self.status in ["started", "terminated"]:
+        if self.status in [GameStatus.STARTED, GameStatus.TERMINATED]:
             raise ValueError("Game has been started or was terminated")
-        if name in self._get_players_identifiers():
+        if self.does_player_exist(name):
             raise ValueError(f"Player with identifier={name} already exists")
 
         player = Player(name)
@@ -95,10 +97,13 @@ class Game:
     def get_current_player(self) -> int:
         return self.player_counter
 
+    def does_player_exist(self, name: str) -> bool:
+        return name in self._get_players_identifiers()
+
     def start_game(self):
-        if self.status == "not_started":
+        if self.status == GameStatus.NOT_STARTED:
             self._new_round()
-            self.status = "started"
+            self.status = GameStatus.STARTED
             self.max_players = len(self.players)
         else:
             raise ValueError("Game has been started or was terminated")
@@ -153,7 +158,7 @@ class Game:
         d_game = dict()
         d_game["id"] = self.name
         d_game["name"] = self.name
-        d_game["status"] = self.status
+        d_game["status"] = str(self.status)
         d_game["current_player"] = self.get_current_player()
 
         # append players to the game dict
