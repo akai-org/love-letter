@@ -53,12 +53,8 @@ class Player:
 
 
 class Game:
-    def __init__(
-        self, num_players: int, name: str, player_names: list[str]
-    ) -> None:
-        self.players: list[Player] = [
-            Player(name, i) for i in range(num_players)
-        ]
+    def __init__(self, num_players: int, name: str) -> None:
+        self.players: list[Player] = []
         self.max_players: int = num_players
         self.player_counter: int = 0
         self.status: str = "not_started"
@@ -87,6 +83,15 @@ class Game:
                 )
                 break
 
+    def add_new_player(self, name: str) -> None:
+        if self.status in ["started", "terminated"]:
+            raise ValueError("Game has been started or was terminated")
+        if name in self._get_players_identifiers():
+            raise ValueError(f"Player with identifier={name} already exists")
+
+        player = Player(name)
+        self.players.append(player)
+
     def get_current_player(self) -> int:
         return self.player_counter
 
@@ -96,7 +101,7 @@ class Game:
             self.status = "started"
             self.max_players = len(self.players)
         else:
-            raise TypeError("Game has been started or was terminated")
+            raise ValueError("Game has been started or was terminated")
 
     def is_terminal(self) -> bool:
         raise NotImplementedError()
@@ -108,8 +113,7 @@ class Game:
         self._remaining_cards = self._create_new_deck()
 
         for player in self.players:
-            # player.deck.append(self._remaining_cards.pop())
-            pass
+            player.get_card_from_deck(self._remaining_cards)
 
     def _create_new_deck(self) -> list[Card]:
         full_deck = []
@@ -141,6 +145,9 @@ class Game:
         self._remaining_cards = PriorityQueue()
         for card in full_deck:
             self._remaining_cards.put(card)
+
+    def _get_players_identifiers(self) -> tuple[str]:
+        return (p._identifier for p in self.players)
 
     def __dict__(self):
         d_game = dict()
