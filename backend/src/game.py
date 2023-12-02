@@ -82,6 +82,14 @@ class Game:
     def get_current_player(self) -> int:
         return self.player_counter
 
+    def start_game(self):
+        if self.status == "not_started":
+            self._new_round()
+            self.status = "started"
+            self.max_players = len(self.players)
+        else:
+            raise TypeError("Game has been started or was terminated")
+
     def is_terminal(self) -> bool:
         raise NotImplementedError()
 
