@@ -1,5 +1,6 @@
 import random
 from enum import IntEnum
+from queue import LifoQueue
 
 
 class Card(IntEnum):
@@ -21,7 +22,7 @@ class Player:
         self._played_cards = []
         self.is_killed = False
         self.can_be_chosen = True
-        self.points = 0
+        self.score = 0
 
     def increment_score(self):
         self.points += 1
@@ -32,18 +33,22 @@ class Player:
         self.is_killed = False
         self.can_be_chosen = True
 
-    def get_card_from_deck(self, deck: list):
-        pass
+    def get_card_from_deck(self, deck: LifoQueue):
+        self._deck.append(deck.get())
 
 
 class Game:
-    _remaining_cards = []
-
-    def __init__(self, num_players: int) -> None:
-        self.players = [Player() for _ in range(num_players)]
-        self.player_counter = 0
-        self._remaining_cards = []
-        self._new_round()
+    def __init__(
+        self, num_players: int, name: str, player_names: list[str]
+    ) -> None:
+        self.players: list[Player] = [
+            Player(name, i) for i in range(num_players)
+        ]
+        self.max_players: int = num_players
+        self.player_counter: int = 0
+        self.status: str = "not_started"
+        self.name: str = name
+        self._remaining_cards: LifoQueue = LifoQueue()
 
     def move(self, card: Card, action: str) -> bool:
         current_player = self.players[self.player_counter]
@@ -55,16 +60,18 @@ class Game:
                     return True
                 else:
                     return False
-            case other:
+            case _:
                 raise NotImplementedError()
 
         # raise NotImplementedError()
 
     def switch_current_player(self) -> None:
         while True:
-            self.player_counter = (self.player_counter + 1) % len(self.players)
+            self.player_counter = (self.player_counter + 1) % self.max_players
             if not self.players[self.player_counter].is_killed:
-                self.players[self.player_counter].get_card_from_deck()
+                self.players[self.player_counter].get_card_from_deck(
+                    self._remaining_cards
+                )
                 break
 
     def get_current_player(self) -> int:
@@ -87,27 +94,30 @@ class Game:
         full_deck = []
 
         # add all kinds of cards to deck in correct amounts
-        full_deck.append(Card(9))
-        full_deck.append(Card(8))
-        full_deck.append(Card(7))
-        for i in range(2):
-            full_deck.append(Card(6))
-        for i in range(2):
-            full_deck.append(Card(5))
-        for i in range(2):
-            full_deck.append(Card(4))
-        for i in range(2):
-            full_deck.append(Card(3))
-        for i in range(2):
-            full_deck.append(Card(2))
-        for i in range(6):
-            full_deck.append(Card(1))
-        for i in range(2):
-            full_deck.append(Card(0))
+        full_deck.append(Card.NINE_PRINCESS)
+        full_deck.append(Card.EIGHT_COUNTESS)
+        full_deck.append(Card.SEVEN_KING)
+        for _ in range(2):
+            full_deck.append(Card.SIX_CHANCELLOR)
+        for _ in range(2):
+            full_deck.append(Card.FIVE_PRINCE)
+        for _ in range(2):
+            full_deck.append(Card.FOUR_HANDMAID)
+        for _ in range(2):
+            full_deck.append(Card.THREE_BARON)
+        for _ in range(2):
+            full_deck.append(Card.TWO_PRIEST)
+        for _ in range(6):
+            full_deck.append(Card.ONE_GUARD)
+        for _ in range(2):
+            full_deck.append(Card.ZERO_SPY)
 
         # get the deck ready for round(shuffle and remove one card)
         random.shuffle(full_deck)
         full_deck.pop()
-        self._remaining_cards = full_deck
 
-        # raise NotImplementedError()
+        # LifoQueue for faster card gaining
+        self._remaining_cards = LifoQueue()
+        for card in full_deck:
+            self._remaining_cards.put(card)
+
