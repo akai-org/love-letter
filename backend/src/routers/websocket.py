@@ -15,4 +15,4 @@ async def websocket_endpoint(
             data = await websocket.receive_text()
             await manager.handle_message(room_id, client_id, data)
     except WebSocketDisconnect:
-        await websocket.close()
+        await manager.remove(websocket)

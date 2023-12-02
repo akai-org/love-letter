@@ -100,6 +100,19 @@ class Game:
     def does_player_exist(self, name: str) -> bool:
         return name in self._get_players_identifiers()
 
+    def remove_player(self, name: str):
+        if self.status == GameStatus.NOT_STARTED:
+            was_removed = False
+            for player in self.players:
+                if player._identifier == name:
+                    was_removed = True
+                    self.players.remove(player)
+                    break
+            if not was_removed:
+                raise ValueError("Player with this identifier was not found")
+        else:
+            raise ValueError("Game has been started or was terminated")
+
     def start_game(self):
         if self.status == GameStatus.NOT_STARTED:
             self._new_round()
