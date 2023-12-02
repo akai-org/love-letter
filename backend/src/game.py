@@ -1,6 +1,6 @@
 import random
 from enum import IntEnum
-from queue import LifoQueue
+from queue import PriorityQueue
 
 
 class Card(IntEnum):
@@ -38,7 +38,7 @@ class Player:
         self.is_killed = False
         self.can_be_chosen = True
 
-    def get_card_from_deck(self, deck: LifoQueue):
+    def get_card_from_deck(self, deck: PriorityQueue):
         self._deck.append(deck.get())
 
     def __dict__(self):
@@ -63,7 +63,7 @@ class Game:
         self.player_counter: int = 0
         self.status: str = "not_started"
         self.name: str = name
-        self._remaining_cards: LifoQueue = LifoQueue()
+        self._remaining_cards: PriorityQueue = PriorityQueue()
 
     def move(self, card: Card, action: str) -> bool:
         current_player = self.players[self.player_counter]
@@ -137,8 +137,8 @@ class Game:
         random.shuffle(full_deck)
         full_deck.pop()
 
-        # LifoQueue for faster card gaining
-        self._remaining_cards = LifoQueue()
+        # PriorityQueue for faster card gaining
+        self._remaining_cards = PriorityQueue()
         for card in full_deck:
             self._remaining_cards.put(card)
 
