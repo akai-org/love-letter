@@ -9,8 +9,8 @@ manager = GameManager()
 async def websocket_endpoint(
     websocket: WebSocket, room_id: str, client_id: str
 ):
-    await manager.connect(websocket, room_id, client_id)
     try:
+        await manager.connect(websocket, room_id, client_id)
         while True:
             data = await websocket.receive_text()
             await manager.handle_message(room_id, client_id, data)

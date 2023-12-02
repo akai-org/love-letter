@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from custom_types import GameStatus
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 from game import Game
 
 
@@ -26,16 +26,23 @@ class GameManager:
 
         game: Game = self.games[room_name]
 
+        should_ws_be_closed = False
         match game.status:
             case GameStatus.NOT_STARTED:
-                game.add_new_player(client_id)
-                if self._should_start_the_game(game, room_name):
-                    game.start_game()
+                try:
+                    game.add_new_player(client_id)
+                    if self._should_start_the_game(game, room_name):
+                        game.start_game()
+                except ValueError:
+                    should_ws_be_closed = True
             case GameStatus.STARTED:
                 if game.does_player_exist(client_id) == False:
-                    websocket.close()
+                    should_ws_be_closed = True
             case GameStatus.TERMINATED:
-                websocket.close()
+                should_ws_be_closed = True
+
+        if should_ws_be_closed:
+            raise WebSocketDisconnect
 
         websocket.scope["room_name"] = room_name
         websocket.scope["client_id"] = client_id
@@ -59,15 +66,16 @@ class GameManager:
             return None
 
     async def remove(self, websocket: WebSocket) -> None:
-        client_name = websocket.scope["client_id"]
-        room_name = websocket.scope["room_name"]
-        game: Game = self.games[room_name]
         try:
+            client_name = websocket.scope["client_id"]
+            room_name = websocket.scope["room_name"]
+            game: Game = self.games[room_name]
             game.remove_player(client_name)
-        except ValueError:
+            self.connections[room_name].remove(websocket)
+        except (ValueError, KeyError):
             pass
-        self.connections[room_name].remove(websocket)
-        await websocket.close()
+        finally:
+            await websocket.close()
 
     # TODO: Support for ready/unready
     def _should_start_the_game(self, game: Game, room_name: str) -> bool:
