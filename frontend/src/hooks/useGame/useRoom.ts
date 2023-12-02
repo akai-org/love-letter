@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GameState } from '../../types/Game';
 import { RoomEvent, RoomEventListener, RoomEventsListeners, roomEvents } from "../../types/RoomEvents";
 import { FromRoomMessage, SocketStatus } from "../../types/Socket";
@@ -35,21 +35,21 @@ export default function useRoom(gameID: string, clientID: string, setState: Reac
 
     // setSocket(socket);
     return () => socket.close();
-  }, [gameID, socket]);
+  }, [gameID, socket, handleMessages]);
 
 
-  function handleMessages(ev: MessageEvent<FromRoomMessage>) {
-    const { event, state } = ev.data;
+  const handleMessages = useCallback((ev: MessageEvent<FromRoomMessage>) => {
+    const { events, state } = ev.data;
 
-    if ([event, state].every(v => v == undefined)) throw new Error('Message is empty.');
+    if ([events, state].every(v => v == undefined)) throw new Error('Message is empty.');
 
-    // Call the event callback if the event is valid
+    // Call every event callback if the event is valid
     // then set the state if the state is valid
     if ([
-      messageCallEvent(event!, eventsListeners),
+      events?.every(event => messageCallEvent(event!, eventsListeners)),
       messageSetState(state!, setState)
     ].every(v => v == false)) throw new Error('Message is invalid.');
-  }
+  }, [eventsListeners, setState])
 
 
   function on<U extends RoomEvent>(event: U, callback: RoomEventListener<U>) {
@@ -73,6 +73,7 @@ export default function useRoom(gameID: string, clientID: string, setState: Reac
 
 
 function messageCallEvent(event: FromRoomMessage['event'], eventsListeners: RoomEventsListeners) {
+
   if (!(event && 'type' in event)) return false;
   if (!(event.type in eventsListeners)) return false;
 
