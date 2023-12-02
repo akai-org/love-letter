@@ -17,7 +17,12 @@ class Card(IntEnum):
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, identifier: str, name: str = None):
+        self._identifier = identifier
+        if name is None:
+            self._name = identifier
+        else:
+            self._name = name
         self._deck = []
         self._played_cards = []
         self.is_killed = False
@@ -25,7 +30,7 @@ class Player:
         self.score = 0
 
     def increment_score(self):
-        self.points += 1
+        self.score += 1
 
     def prepare_for_new_round(self):
         self._deck = []
