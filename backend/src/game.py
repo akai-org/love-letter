@@ -41,6 +41,16 @@ class Player:
     def get_card_from_deck(self, deck: LifoQueue):
         self._deck.append(deck.get())
 
+    def __dict__(self):
+        d_player = dict()
+        d_player["id"] = self._identifier
+        d_player["name"] = self._name
+        d_player["score"] = self.score
+        d_player["played_cards"] = self._played_cards
+        d_player["alive"] = not self.is_killed
+        d_player["how_many_cards"] = len(self._deck)
+        return d_player
+
 
 class Game:
     def __init__(
@@ -67,8 +77,6 @@ class Game:
                     return False
             case _:
                 raise NotImplementedError()
-
-        # raise NotImplementedError()
 
     def switch_current_player(self) -> None:
         while True:
@@ -134,3 +142,16 @@ class Game:
         for card in full_deck:
             self._remaining_cards.put(card)
 
+    def __dict__(self):
+        d_game = dict()
+        d_game["id"] = self.name
+        d_game["name"] = self.name
+        d_game["status"] = self.status
+        d_game["current_player"] = self.get_current_player()
+
+        # append players to the game dict
+        d_game["players"] = []
+        for player in self.players:
+            d_game["players"].append(dict(player))
+
+        return d_game
