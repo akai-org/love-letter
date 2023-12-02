@@ -1,5 +1,6 @@
 import random
 from enum import IntEnum
+from queue import PriorityQueue
 
 
 class Card(IntEnum):
@@ -16,15 +17,20 @@ class Card(IntEnum):
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, identifier: str, name: str = None):
+        self._identifier = identifier
+        if name is None:
+            self._name = identifier
+        else:
+            self._name = name
         self._deck = []
         self._played_cards = []
         self.is_killed = False
         self.can_be_chosen = True
-        self.points = 0
+        self.score = 0
 
     def increment_score(self):
-        self.points += 1
+        self.score += 1
 
     def prepare_for_new_round(self):
         self._deck = []
@@ -32,18 +38,28 @@ class Player:
         self.is_killed = False
         self.can_be_chosen = True
 
-    def get_card_from_deck(self, deck: list):
-        pass
+    def get_card_from_deck(self, deck: PriorityQueue):
+        self._deck.append(deck.get())
+
+    def __dict__(self):
+        d_player = dict()
+        d_player["id"] = self._identifier
+        d_player["name"] = self._name
+        d_player["score"] = self.score
+        d_player["played_cards"] = self._played_cards
+        d_player["alive"] = not self.is_killed
+        d_player["how_many_cards"] = len(self._deck)
+        return d_player
 
 
 class Game:
-    _remaining_cards = []
-
-    def __init__(self, num_players: int) -> None:
-        self.players = [Player() for _ in range(num_players)]
-        self.player_counter = 0
-        self._remaining_cards = []
-        self._new_round()
+    def __init__(self, num_players: int, name: str) -> None:
+        self.players: list[Player] = []
+        self.max_players: int = num_players
+        self.player_counter: int = 0
+        self.status: str = "not_started"
+        self.name: str = name
+        self._remaining_cards: PriorityQueue = PriorityQueue()
 
     def move(self, card: Card, action: str) -> bool:
         current_player = self.players[self.player_counter]
@@ -55,20 +71,37 @@ class Game:
                     return True
                 else:
                     return False
-            case other:
+            case _:
                 raise NotImplementedError()
-
-        # raise NotImplementedError()
 
     def switch_current_player(self) -> None:
         while True:
-            self.player_counter = (self.player_counter + 1) % len(self.players)
+            self.player_counter = (self.player_counter + 1) % self.max_players
             if not self.players[self.player_counter].is_killed:
-                self.players[self.player_counter].get_card_from_deck()
+                self.players[self.player_counter].get_card_from_deck(
+                    self._remaining_cards
+                )
                 break
+
+    def add_new_player(self, name: str) -> None:
+        if self.status in ["started", "terminated"]:
+            raise ValueError("Game has been started or was terminated")
+        if name in self._get_players_identifiers():
+            raise ValueError(f"Player with identifier={name} already exists")
+
+        player = Player(name)
+        self.players.append(player)
 
     def get_current_player(self) -> int:
         return self.player_counter
+
+    def start_game(self):
+        if self.status == "not_started":
+            self._new_round()
+            self.status = "started"
+            self.max_players = len(self.players)
+        else:
+            raise ValueError("Game has been started or was terminated")
 
     def is_terminal(self) -> bool:
         raise NotImplementedError()
@@ -80,34 +113,52 @@ class Game:
         self._remaining_cards = self._create_new_deck()
 
         for player in self.players:
-            # player.deck.append(self._remaining_cards.pop())
-            pass
+            player.get_card_from_deck(self._remaining_cards)
 
     def _create_new_deck(self) -> list[Card]:
         full_deck = []
 
         # add all kinds of cards to deck in correct amounts
-        full_deck.append(Card(9))
-        full_deck.append(Card(8))
-        full_deck.append(Card(7))
-        for i in range(2):
-            full_deck.append(Card(6))
-        for i in range(2):
-            full_deck.append(Card(5))
-        for i in range(2):
-            full_deck.append(Card(4))
-        for i in range(2):
-            full_deck.append(Card(3))
-        for i in range(2):
-            full_deck.append(Card(2))
-        for i in range(6):
-            full_deck.append(Card(1))
-        for i in range(2):
-            full_deck.append(Card(0))
+        full_deck.append(Card.NINE_PRINCESS)
+        full_deck.append(Card.EIGHT_COUNTESS)
+        full_deck.append(Card.SEVEN_KING)
+        for _ in range(2):
+            full_deck.append(Card.SIX_CHANCELLOR)
+        for _ in range(2):
+            full_deck.append(Card.FIVE_PRINCE)
+        for _ in range(2):
+            full_deck.append(Card.FOUR_HANDMAID)
+        for _ in range(2):
+            full_deck.append(Card.THREE_BARON)
+        for _ in range(2):
+            full_deck.append(Card.TWO_PRIEST)
+        for _ in range(6):
+            full_deck.append(Card.ONE_GUARD)
+        for _ in range(2):
+            full_deck.append(Card.ZERO_SPY)
 
         # get the deck ready for round(shuffle and remove one card)
         random.shuffle(full_deck)
         full_deck.pop()
-        self._remaining_cards = full_deck
 
-        # raise NotImplementedError()
+        # PriorityQueue for faster card gaining
+        self._remaining_cards = PriorityQueue()
+        for card in full_deck:
+            self._remaining_cards.put(card)
+
+    def _get_players_identifiers(self) -> tuple[str]:
+        return (p._identifier for p in self.players)
+
+    def __dict__(self):
+        d_game = dict()
+        d_game["id"] = self.name
+        d_game["name"] = self.name
+        d_game["status"] = self.status
+        d_game["current_player"] = self.get_current_player()
+
+        # append players to the game dict
+        d_game["players"] = []
+        for player in self.players:
+            d_game["players"].append(dict(player))
+
+        return d_game
