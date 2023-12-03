@@ -8,7 +8,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/src:/backend/
+      - ./backend/src:/backend/src/
     # restart: always
 
   ui:
@@ -21,7 +21,6 @@ services:
     depends_on:
       - api
     # restart: always
-    # comment
     volumes:
       - ./frontend/src:/frontend/src/
       - ./frontend/public:/frontend/public/

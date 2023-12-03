@@ -1,5 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from game_manager import GameManager
+
+from src.game_manager import GameManager
 
 router = APIRouter()
 manager = GameManager()

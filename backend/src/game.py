@@ -2,7 +2,7 @@ import random
 from enum import IntEnum
 from queue import PriorityQueue
 
-from custom_types import GameStatus
+from src.custom_types import GameStatus
 
 
 class Card(IntEnum):
@@ -120,6 +120,16 @@ class Game:
             self.max_players = len(self.players)
         else:
             raise ValueError("Game has been started or was terminated")
+
+    def to_json(self, player_name: str = None):
+        res = dict(self)
+
+        if player_name is None:
+            for player in self._get_players_identifiers():
+                pass
+        else:
+            res["your_cards"] = []
+            return res
 
     def is_terminal(self) -> bool:
         raise NotImplementedError()

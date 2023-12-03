@@ -1,8 +1,9 @@
 from collections import defaultdict
 
-from custom_types import GameStatus
 from fastapi import WebSocket, WebSocketDisconnect
-from game import Game
+
+from src.custom_types import GameStatus
+from src.game import Game
 
 
 class GameManager:
