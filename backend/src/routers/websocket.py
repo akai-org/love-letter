@@ -1,5 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from game_manager import GameManager
+
+from src.game_manager import GameManager
 
 router = APIRouter()
 manager = GameManager()
@@ -9,10 +10,10 @@ manager = GameManager()
 async def websocket_endpoint(
     websocket: WebSocket, room_id: str, client_id: str
 ):
-    await manager.connect(websocket, room_id, client_id)
     try:
+        await manager.connect(websocket, room_id, client_id)
         while True:
             data = await websocket.receive_text()
             await manager.handle_message(room_id, client_id, data)
     except WebSocketDisconnect:
-        await websocket.close()
+        await manager.remove(websocket)
