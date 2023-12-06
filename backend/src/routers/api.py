@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 
+from src.dependencies import game_manager
+
 router = APIRouter()
 
 games_data = [

@@ -1,9 +1,8 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from src.game_manager import GameManager
+from src.dependencies import game_manager as manager
 
 router = APIRouter()
-manager = GameManager()
 
 
 @router.websocket("/ws/{room_id}/{client_id}")
