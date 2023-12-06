@@ -95,6 +95,12 @@ class Game:
     def get_current_player(self) -> int:
         return self.player_counter
 
+    def find_player(self, chosen_player_identifier: str) -> Player | None:
+        for player in self.players:
+            if player._identifier == chosen_player_identifier:
+                return player
+        return None
+
     def start_game(self):
         if self.status == "not_started":
             self._new_round()
