@@ -1,6 +1,10 @@
 // room status
-export const roomStatuses = ['waiting', 'playing', 'over'] as const;
-export type RoomStatus = typeof roomStatuses[number];
+
+export enum RoomStatus {
+  Waiting = 'waiting',
+  Playing = 'playing',
+  Over = 'over',
+}
 
 // room type
 export type Room = {

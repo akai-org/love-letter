@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { GameState } from '../../types/Game';
-import { RoomEvent, RoomEventListener, RoomEventsListeners, roomEvents } from "../../types/RoomEvents";
+import { RoomEvent, RoomEventListener, RoomEventsListeners } from "../../types/RoomEvents";
 import { FromRoomMessage, SocketStatus } from "../../types/Socket";
 import { PlayerAction, PlayerActionPayload } from "../../types/PlayerActions";
 
 
-const initialEventsListeners = roomEvents.reduce((acc, event) => {
+const initialEventsListeners = Object.keys(RoomEvent).reduce((acc, event) => {
   acc[event] = [];
   return acc;
 }, {} as RoomEventsListeners);
@@ -29,27 +29,30 @@ export default function useRoom(gameID: string, clientID: string, setState: Reac
   const [eventsListeners, setEventsListeners] = useState<RoomEventsListeners>(initialEventsListeners);
 
   useEffect(() => {
-    socket.onopen = () => setStatus("connected");
-    socket.onclose = () => setStatus("disconnected");
-    socket.onmessage = handleMessages;
+    socket.onclose = () => {
+      setStatus("disconnected");
+    };
+    socket.onopen = () => {
+      send('IDENTITY', { userID: clientID })
+      setStatus("connected");
+    }
+    socket.onmessage = () => (ev: MessageEvent<FromRoomMessage>) => {
+      const { events, state } = ev.data;
 
-    // setSocket(socket);
+      if ([events, state].every(v => v == undefined)) throw new Error('Message is empty.');
+
+      // Call every event callback if the event is valid
+      // then set the state if the state is valid
+      if ([
+        events?.every(event => messageCallEvent(event!, eventsListeners)),
+        messageSetState(state!, setState)
+      ].every(v => v == false)) throw new Error('Message is invalid.');
+    };
+
     return () => socket.close();
-  }, [gameID, socket, handleMessages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameID, clientID, socket]);
 
-
-  const handleMessages = useCallback((ev: MessageEvent<FromRoomMessage>) => {
-    const { events, state } = ev.data;
-
-    if ([events, state].every(v => v == undefined)) throw new Error('Message is empty.');
-
-    // Call every event callback if the event is valid
-    // then set the state if the state is valid
-    if ([
-      events?.every(event => messageCallEvent(event!, eventsListeners)),
-      messageSetState(state!, setState)
-    ].every(v => v == false)) throw new Error('Message is invalid.');
-  }, [eventsListeners, setState])
 
 
   function on<U extends RoomEvent>(event: U, callback: RoomEventListener<U>) {

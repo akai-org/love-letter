@@ -1,8 +1,13 @@
 //player actions
-export const playerActions = ['PLAY', 'READY', 'UNREADY'] as const;
-export type PlayerAction = typeof playerActions[number];
+export enum PlayerAction {
+  PLAY = 'PLAY',
+  READY = 'READY',
+  UNREADY = 'UNREADY',
+  IDENTITY = 'IDENTITY',
+}
 
 export type PlayerActionPayload<T extends PlayerAction> =
-  T extends 'PLAY' ? { card: string } :
-  T extends 'READY' ? null :
-  T extends 'UNREADY' ? null : never
+  T extends PlayerAction.PLAY ? { card: string } :
+  T extends PlayerAction.READY ? null :
+  T extends PlayerAction.UNREADY ? null :
+  T extends PlayerAction.IDENTITY ? { userID: string } : never;
