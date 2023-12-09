@@ -4,7 +4,11 @@ import { PlayerAction, PlayerActionPayload } from "./PlayerActions";
 import { Event } from "./RoomEvents";
 
 // server status
-export type SocketStatus = "connected" | "disconnected";
+export enum SocketStatus {
+  connecting = "connecting",
+  connected = "connected",
+  disconnected = "disconnected",
+}
 
 //websocket messages
 export interface FromRoomMessage {
