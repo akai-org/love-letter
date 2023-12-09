@@ -27,7 +27,10 @@ export function RoomsList() {
           className=" flex w-1/2 flex-col items-center justify-around border-0 bg-white text-xs"
         >
           <h2 className="m-1">~ {room.game_id} ~</h2>
-          <PlayersCounter />
+          <PlayersCounter
+            players={room.players ?? 0}
+            max_players={room.max_players}
+          />
           <button
             className="m-1 rounded-3xl border border-dotted border-black px-4 py-0.5 transition-all duration-300 hover:scale-110 hover:bg-black hover:text-white active:scale-95"
             onClick={() => handleJoinRoom(room.game_id)}
@@ -51,9 +54,7 @@ export function PlayersCounter(props: {
     <div className="">
       {[...Array(props.max_players)].map((_, i) => (
         <PersonIcon
-          style={
-            ({ opacity: i >= props.players ? 0.1 : 1 }, { height: ".8rem" })
-          }
+          style={{ opacity: i >= props.players ? 0.1 : 1, height: ".8rem" }}
           key={i}
         />
       ))}

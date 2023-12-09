@@ -1,15 +1,15 @@
 import { ReactNode, useState } from "react";
 import { GameContext } from "./useGameContext";
-import { GameState } from "../../types/Game";
+import { GameState, GameStatus } from "../../types/Game";
 import useRoomWebsockets from "./useRoomWebsockets";
 
 const initialGameState: GameState = {
   id: "",
   name: "",
-  status: "",
+  status: GameStatus.NOT_STARTED,
   current_player: "",
   players: [],
-  cards: [],
+  your_cards: [],
 };
 
 type GameProviderProps = {

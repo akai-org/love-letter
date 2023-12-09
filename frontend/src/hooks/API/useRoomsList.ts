@@ -1,6 +1,5 @@
 import { Room } from './../../types/Room';
 import { useEffect, useState } from "react";
-import { Room } from "../../types/Room";
 
 export default function useRoomsList(filters: { started: boolean }) {
   const [roomsList, setRoomsList] = useState<Room[]>([]);
@@ -15,11 +14,11 @@ export default function useRoomsList(filters: { started: boolean }) {
       });
 
       try {
-        const reponse = await fetch(import.meta.env.API_URL + `/games?${params}`)
+        const reponse = await fetch(import.meta.env.APP_API_URL + `/games?${params}`)
         const data = await reponse.json();
         setRoomsList(data["games"]);
       } catch (error) {
-        setError(error.message);
+        setError((error as Error).message);
       }
     };
 

@@ -1,4 +1,3 @@
-import { RoomEvent } from './RoomEvents';
 
 export interface Event {
   type: RoomEvent;

@@ -7,6 +7,7 @@ export function CreateRoomForm() {
   const [form, setForm] = useState<CreateRoomOptions>({
     name: "",
     max_players: 2,
+    password: "",
   });
 
   const handleChangeField =

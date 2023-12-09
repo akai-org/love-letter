@@ -13,5 +13,5 @@ export default defineConfig({
 
   },
 
-  envPrefix: "",
+  envPrefix: "APP_",
 })

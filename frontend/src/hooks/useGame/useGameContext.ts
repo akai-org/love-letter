@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { GameState } from "../../types/Game";
+import { GameState, GameStatus } from "../../types/Game";
 import { RoomEvent, RoomEventListener } from "../../types/RoomEvents";
 import { SocketStatus } from "../../types/Socket";
 import { PlayerAction, PlayerActionPayload } from "../../types/PlayerActions";
@@ -16,7 +16,7 @@ export interface GameContextType {
   /** Method to register a callback for a specific event */
   listen: <T extends RoomEvent>(event: T, callback: RoomEventListener<T>) => void;
   /** Method to unregister a callback for a specific event */
-  unlisten: <T extends RoomEvent>(event: T, ...args: Parameters<RoomEventListener<T>>) => void;
+  unlisten: <U extends RoomEvent>([event, id]: readonly [U, number]) => void;
 
   /** Method to send an action to the server */
   send: <A extends PlayerAction>(type: A, payload: PlayerActionPayload<A>) => void;
@@ -26,13 +26,14 @@ export const initialroomContext: GameContextType = {
   gameState: {
     id: "",
     name: "",
-    status: "",
+    status: GameStatus.NOT_STARTED,
     current_player: "",
     players: [],
-    cards: [],
+    your_cards: [],
   },
+  setGameState: () => { },
 
-  socketStatus: "disconnected",
+  socketStatus: SocketStatus.disconnected,
   listen: () => { },
   unlisten: () => { },
   send: () => { },
