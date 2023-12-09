@@ -14,9 +14,12 @@ export interface GameContextType {
   socketStatus: SocketStatus;
 
   /** Method to register a callback for a specific event */
-  on: <T extends RoomEvent>(event: T, callback: RoomEventListener<T>) => void;
-  /** Method to send a message to the server */
-  send: <T extends PlayerAction>(action: T, payload: PlayerActionPayload<T>) => void;
+  listen: <T extends RoomEvent>(event: T, callback: RoomEventListener<T>) => void;
+  /** Method to unregister a callback for a specific event */
+  unlisten: <T extends RoomEvent>(event: T, ...args: Parameters<RoomEventListener<T>>) => void;
+
+  /** Method to send an action to the server */
+  send: <A extends PlayerAction>(type: A, payload: PlayerActionPayload<A>) => void;
 }
 
 export const initialroomContext: GameContextType = {
@@ -28,15 +31,14 @@ export const initialroomContext: GameContextType = {
     players: [],
     cards: [],
   },
-  setGameState: () => { },
 
   socketStatus: "disconnected",
-  on: () => { },
+  listen: () => { },
+  unlisten: () => { },
   send: () => { },
 };
 
 export const GameContext = createContext<GameContextType>(initialroomContext);
-
 
 /**
  * Custom hook to manage the game state and the connection to the room.
@@ -45,7 +47,7 @@ export const GameContext = createContext<GameContextType>(initialroomContext);
  * @throws Error if used outside of a GameProvider
  * 
  * @example
- * const { gameState, setGameState, socketStatus, on, send } = useGame();
+ * const { gameState, socketStatus, on, send } = useGame();
  */
 
 export function useGame(): GameContextType {

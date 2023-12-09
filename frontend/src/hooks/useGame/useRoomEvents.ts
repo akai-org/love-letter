@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { RoomEvent, RoomEventsListeners, RoomEventListener } from '../../types/RoomEvents';
 
+const initialEventsListeners = Object.keys(RoomEvent).reduce((acc, event) => {
+  acc[event] = [];
+  return acc;
+}, {} as RoomEventsListeners);
+
 export default function useRoomEvents() {
-  const [events, setEvents] = useState({} as RoomEventsListeners);
+  const [events, setEvents] = useState(initialEventsListeners);
 
   function listen<U extends RoomEvent>(event: U, callback: RoomEventListener<U>) {
     const callbacks = events[event] ?? [];
@@ -19,6 +24,8 @@ export default function useRoomEvents() {
   }
 
   function trigger<U extends RoomEvent>(event: U, ...args: Parameters<RoomEventListener<U>>) {
+    if (!event in RoomEvent) throw new Error(`Event ${event} does not exist.`);
+
     const callbacks = events[event] ?? [];
     callbacks.forEach((callback) => callback?.(...args));
   }
