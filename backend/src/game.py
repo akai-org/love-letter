@@ -59,12 +59,16 @@ class Player:
 
 
 class Game:
-    def __init__(self, num_players: int, name: str) -> None:
+    def __init__(
+        self, max_players: int, name: str, password: str | None = None
+    ) -> None:
+        assert max_players <= 6 and max_players >= 2
         self.players: list[Player] = []
-        self.max_players: int = num_players
+        self.max_players: int = max_players
         self.player_counter: int = 0
         self.status: GameStatus = GameStatus.NOT_STARTED
         self.name: str = name
+        self.password: str | None = password
         self._remaining_cards: PriorityQueue = PriorityQueue()
 
     def move(self, card: Card, action: list[str]) -> bool:
@@ -240,11 +244,15 @@ class Game:
                 )
                 break
 
-    def add_new_player(self, name: str) -> None:
+    def add_new_player(self, name: str, password: str) -> None:
+        if password != self.password:
+            raise ValueError("Password does not match")
         if self.status in [GameStatus.STARTED, GameStatus.TERMINATED]:
             raise ValueError("Game has been started or was terminated")
         if self.does_player_exist(name):
             raise ValueError(f"Player with identifier={name} already exists")
+        if len(self.players) == self.max_players:
+            raise ValueError("Tried to exceed maximum number of players")
 
         player = Player(name)
         self.players.append(player)
