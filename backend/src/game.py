@@ -47,7 +47,7 @@ class Player:
         self._deck.pop(card)
         return card
 
-    def __dict__(self):
+    def to_dict(self):
         d_player = dict()
         d_player["id"] = self._identifier
         d_player["name"] = self._name
@@ -263,14 +263,11 @@ class Game:
 
     def remove_player(self, name: str):
         if self.status == GameStatus.NOT_STARTED:
-            was_removed = False
-            for player in self.players:
-                if player._identifier == name:
-                    was_removed = True
-                    self.players.remove(player)
-                    break
-            if not was_removed:
+            player = self.find_player(name)
+            if player is None:
                 raise ValueError("Player with this identifier was not found")
+            else:
+                self.players.remove(player)
         else:
             raise ValueError("Game has been started or was terminated")
 
@@ -282,15 +279,19 @@ class Game:
         else:
             raise ValueError("Game has been started or was terminated")
 
-    def to_json(self, player_name: str = None):
-        res = dict(self)
+    def to_dict(self, player_name: str = None):
+        d_game = dict()
+        d_game["id"] = self.name
+        d_game["name"] = self.name
+        d_game["status"] = str(self.status)
+        d_game["current_player"] = self.get_current_player()
 
-        if player_name is None:
-            for player in self._get_players_identifiers():
-                pass
-        else:
-            res["your_cards"] = []
-            return res
+        # append players to the game dict
+        d_game["players"] = []
+        for player in self.players:
+            d_game["players"].append(player.to_dict())
+
+        return d_game
 
     def is_terminal(self) -> bool:
         raise NotImplementedError()
@@ -298,13 +299,14 @@ class Game:
     def _new_round(self) -> None:
         for player in self.players:
             player.is_killed = False
+            player.is_protected = False
 
-        self._remaining_cards = self._create_new_deck()
+        self._create_new_deck()
 
         for player in self.players:
             player.get_card_from_deck(self._remaining_cards)
 
-    def _create_new_deck(self) -> list[Card]:
+    def _create_new_deck(self) -> None:
         full_deck = []
 
         # add all kinds of cards to deck in correct amounts
@@ -340,17 +342,3 @@ class Game:
 
     def _get_players_identifiers(self) -> tuple[str]:
         return (p._identifier for p in self.players)
-
-    def __dict__(self):
-        d_game = dict()
-        d_game["id"] = self.name
-        d_game["name"] = self.name
-        d_game["status"] = str(self.status)
-        d_game["current_player"] = self.get_current_player()
-
-        # append players to the game dict
-        d_game["players"] = []
-        for player in self.players:
-            d_game["players"].append(dict(player))
-
-        return d_game
