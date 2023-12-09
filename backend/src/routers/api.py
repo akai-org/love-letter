@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.dependencies import game_manager
+from src.dependencies import get_manager
 
 router = APIRouter()
 

@@ -1,18 +1,27 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from typing import Annotated
 
-from src.dependencies import game_manager as manager
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+
+from src.dependencies import get_manager
+from src.game_manager import GameManager
 
 router = APIRouter()
 
 
-@router.websocket("/ws/{room_id}/{client_id}")
+@router.websocket("/ws/{room_name}")
+@router.websocket("/ws/{room_name}/{password}")
 async def websocket_endpoint(
-    websocket: WebSocket, room_id: str, client_id: str
+    websocket: WebSocket,
+    manager: Annotated[GameManager, Depends(get_manager)],
 ):
+    room_name = websocket.path_params["room_name"]
+    password = websocket.path_params.get("password", None)
+
     try:
-        await manager.connect(websocket, room_id, client_id)
+        await manager.connect(websocket, room_name, password)
+        client_id = websocket.scope["client_id"]
         while True:
-            data = await websocket.receive_text()
-            await manager.handle_message(room_id, client_id, data)
+            data = await websocket.receive_json()
+            await manager.handle_message(room_name, client_id, data)
     except WebSocketDisconnect:
         await manager.remove(websocket)
