@@ -24,4 +24,4 @@ async def websocket_endpoint(
             data = await websocket.receive_json()
             await manager.handle_message(room_name, client_id, data)
     except WebSocketDisconnect:
-        await manager.remove(websocket)
+        await manager.disconnect(websocket)
