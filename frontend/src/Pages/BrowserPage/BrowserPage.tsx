@@ -1,55 +1,33 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { RoomsList } from "./RoomsList";
+import { CreateRoomForm } from "./CreateRoom";
 
 // przykładowy komponent nie przywiązujmy się do niego
 export default function BrowserPage() {
-  const [playerName, setPlayerName] = useState("");
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const input = e.currentTarget.elements.namedItem(
-      "name",
-    ) as HTMLInputElement;
-    if (input) setPlayerName(input.value);
-  };
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const navigate = useNavigate();
-  const handleNavigateToRoom = (id: string) => {
-    if (playerName) navigate(`/game/${id}/${playerName}`);
-    inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-
-  useEffect(() => {
-    inputRef.current && inputRef.current.focus();
-  }, []);
+  const [creationExpanded, setCreationExpanded] = useState(false);
 
   return (
     <>
       <h1 className="bg-black p-4 text-center text-4xl text-white">
         Love Letter
+        <p className="text-center text-xs">Musimy zmienić ten layout</p>
       </h1>
 
-      <section className="m-auto flex max-w-sm flex-col items-center gap-2  p-2  text-center text-black">
-        {!playerName ? (
-          <form className="m-2" onSubmit={handleSubmit}>
-            <h2 className="bg-white p-1.5">What is your name, my lord?</h2>
-            <input
-              className="w-36 border-0 border-b-2 border-t-2 bg-white p-2 text-center outline-none"
-              name="name"
-              ref={inputRef}
-            />
-            <input type="submit" hidden />
-          </form>
+      <section className="m-auto flex max-w-sm flex-col items-center gap-y-2 overflow-y-clip  p-2 text-center text-black">
+        {creationExpanded ? (
+          <CreateRoomForm />
         ) : (
-          <div className="bg-white ">
-            Hello, {playerName}! Choose your room!
+          <div className=" m-4 flex w-full items-center justify-center overflow-y-clip font-bold">
+            <button
+              className="aspect-square rounded-3xl border-2 border-dashed border-black p-1 px-3 transition-all duration-300 hover:bg-black hover:text-white"
+              onClick={() => setCreationExpanded(true)}
+            >
+              +
+            </button>
           </div>
         )}
 
-        <RoomsList join={handleNavigateToRoom} />
+        <RoomsList />
       </section>
     </>
   );
