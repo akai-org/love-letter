@@ -18,7 +18,7 @@ export default function useCreateRoom() {
       if (options.max_players < 2) return setError('Room must have at least 2 players.');
       if (options.max_players > 6) return setError('Room cannot have more than 6 players.');
 
-      const reponse = await fetch('/api/v1/games', {
+      const reponse = await fetch(import.meta.env.API_URL + '/games', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

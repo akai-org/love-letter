@@ -3,7 +3,7 @@ import { CreateRoomOptions } from "../../hooks/API/useCreateRoom";
 import { ChangeEvent, useState } from "react";
 import useCreateRoom from "../../hooks/API/useCreateRoom";
 
-export function CreateRoomForm(props: { playerName: string }) {
+export function CreateRoomForm() {
   const [form, setForm] = useState<CreateRoomOptions>({
     name: "",
     max_players: 2,
