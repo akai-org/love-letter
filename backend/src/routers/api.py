@@ -1,5 +1,4 @@
-from fastapi import APIRouter
-
+from fastapi import APIRouter, Body, HTTPException
 from src.dependencies import get_manager
 
 router = APIRouter()
@@ -22,3 +21,17 @@ async def get_games(started: bool):
         return {"games": games}
     else:
         return {"message": "all games has already started"}
+
+
+@router.post("/api/v1/games")
+async def create_game(
+    room_name: str = Body(...),
+    max_players: int = Body(...),
+    password: str = Body(None),
+):
+    try:
+        manager = await get_manager().__anext__()
+        manager.add_new_game(max_players, room_name, password)
+        return {"status": "Game created successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=403, detail=str(e))
