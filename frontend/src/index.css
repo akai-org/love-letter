@@ -8,9 +8,35 @@
 * {
   font-family: 'Playfair Display', serif;
 }
-/* Główny plik css nie wiem czy będziemy robić dodatkowe 
-ale jeżeli tak to będziemy je importować z tego 
 
-Do tailwinda totalnie polecam zainstalować sobie rozszerzenie do VS Code
-jeżeli używasz tego edytora, wtedy będziesz miał podpowiedzi nawet do kolorów
-*/
+.scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.584);
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #690000;
+}
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #870000;
+}
+
+/* Animation of fade-in-out for CSSTransition */
+
+.fade-enter {
+  opacity: 0;
+  z-index: 1;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 100ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 100ms ease-in;
+}
+
