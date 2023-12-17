@@ -1,26 +1,38 @@
 import { ReactNode, useState } from "react";
 import { GameContext } from "./useGameContext";
-import { GameState } from "../../types/Game";
-import useRoom from "./useRoom";
+import { GameState, GameStatus } from "../../types/Game";
+import useRoomWebsockets from "./useRoomWebsockets";
 
 const initialGameState: GameState = {
   id: "",
   name: "",
-  status: "",
+  status: GameStatus.NOT_STARTED,
   current_player: "",
   players: [],
-  cards: [],
+  your_cards: [],
 };
 
-type GameProviderProps = { roomID: string; clientID: string; children: ReactNode };
+type GameProviderProps = {
+  roomID: string;
+  clientID: string;
+  children: ReactNode;
+};
 
 /**
  * This is the top-level component for the Game. It provides the game state and
  * server status and functions to manage the server connection.
  */
-export function GameProvider({ children, roomID, clientID }: GameProviderProps) {
+export function GameProvider({
+  children,
+  roomID,
+  clientID,
+}: GameProviderProps) {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
-  const { status, on, send } = useRoom(roomID, clientID, setGameState);
+  const { status, listen, unlisten, send } = useRoomWebsockets(
+    roomID,
+    clientID,
+    setGameState,
+  );
 
   return (
     <>
@@ -29,8 +41,9 @@ export function GameProvider({ children, roomID, clientID }: GameProviderProps) 
           gameState: gameState,
           setGameState: setGameState,
           socketStatus: status,
-          on,
-          send,
+          listen: listen,
+          unlisten: unlisten,
+          send: send,
         }}
       >
         {children}
