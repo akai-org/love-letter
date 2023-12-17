@@ -1,7 +1,14 @@
 import { Room } from './../../types/Room';
 import { useEffect, useState } from "react";
 
-export default function useRoomsList(filters: { started: boolean }) {
+export type RoomListFilters = {
+  started: boolean;
+};
+
+export const initialRoomListFilters: RoomListFilters = {
+  started: false,
+};
+export default function useRoomsList(filters: RoomListFilters = initialRoomListFilters) {
   const [roomsList, setRoomsList] = useState<Room[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +27,9 @@ export default function useRoomsList(filters: { started: boolean }) {
       } catch (error) {
         setError((error as Error).message);
       }
-    };
+    }
+
+    // fetchRooms();
 
     const interval = setInterval(() => fetchRooms(), REFRESH_TIME_MS);
     return () => clearInterval(interval);
