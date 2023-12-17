@@ -1,34 +1,43 @@
 import { useState } from "react";
-import { RoomsList } from "./RoomsList";
-import { CreateRoomForm } from "./CreateRoom";
+import useRoomsList, {
+  RoomListFilters,
+  initialRoomListFilters,
+} from "../../hooks/API/useRoomsList";
+import { Filters } from "./Filters";
+import { RoomItem } from "./RoomItem";
 
-// przykładowy komponent nie przywiązujmy się do niego
 export default function BrowserPage() {
-  const [creationExpanded, setCreationExpanded] = useState(false);
+  const [filters, setFilters] = useState<RoomListFilters>(
+    initialRoomListFilters,
+  );
+  const [list, error] = useRoomsList(filters);
 
   return (
-    <>
-      <h1 className="bg-black p-4 text-center text-4xl text-white">
-        Love Letter
-        <p className="text-center text-xs">Musimy zmienić ten layout</p>
-      </h1>
+    <div className="grid h-screen max-h-screen w-full grid-cols-3 bg-gradient-to-t from-black to-llred text-white">
+      <div className="col-span-1 px-2">
+        <h1 className="p-1">Filters</h1>
+        <div className="scrollbar max-h-[calc(100vh-40px)] overflow-y-auto overflow-x-hidden pr-1 text-xs">
+          <Filters filters={filters} setFilters={setFilters} />
+        </div>
+      </div>
 
-      <section className="m-auto flex max-w-sm flex-col items-center gap-y-2 overflow-y-clip  p-2 text-center text-black">
-        {creationExpanded ? (
-          <CreateRoomForm />
-        ) : (
-          <div className=" m-4 flex w-full items-center justify-center overflow-y-clip font-bold">
-            <button
-              className="aspect-square rounded-3xl border-2 border-dashed border-black p-1 px-3 transition-all duration-300 hover:bg-black hover:text-white"
-              onClick={() => setCreationExpanded(true)}
-            >
-              +
-            </button>
-          </div>
-        )}
+      <div className="col-span-2 px-2">
+        <div className="flex justify-between p-1">
+          <span>Rooms</span>
+          <span className="px-2">Players</span>
+        </div>
 
-        <RoomsList />
-      </section>
-    </>
+        <div className="scrollbar grid max-h-[calc(100vh-40px)] gap-1  overflow-y-auto  overflow-x-hidden pr-1 text-xs">
+          {error ? (
+            <div className="p-2 text-center">
+              Something went wront with connecting to the server...
+            </div>
+          ) : (
+            list &&
+            list.map((room) => <RoomItem key={room.game_id} room={room} />)
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
