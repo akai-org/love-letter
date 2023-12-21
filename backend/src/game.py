@@ -29,7 +29,6 @@ class Player:
         self._played_cards = []
         self.is_killed = False
         self.is_protected = False
-        self.is_protected = False
         self.score = 0
 
     def increment_score(self):
@@ -44,10 +43,6 @@ class Player:
     def get_card_from_deck(self, deck: PriorityQueue):
         self.is_protected = False
         self._deck.append(deck.get())
-
-    def discard(self, card: Card):
-        self._deck.pop(card)
-        return card
 
     def discard(self, card: Card):
         self._deck.pop(card)
@@ -248,15 +243,19 @@ class Game:
             current_player._deck,
         )
 
-    # fix this function
     def choose_weaker_player(
         current_player: Player, chosen_player: Player
     ) -> Player:
+        player_one_min_card = current_player._deck[0]
         for i in range(len(current_player._deck)):
-            current_player._deck
-        if current_player._deck[0] < chosen_player._deck:
-            pass
-        return
+            if player_one_min_card > current_player._deck[i]:
+                player_one_min_card = current_player._deck[i]
+
+        for j in range(len(chosen_player._deck))
+            if player_one_min_card < chosen_player._deck[j]:
+                return current_player
+            else:
+                return chosen_player
 
     def switch_current_player(self) -> None:
         while True:
@@ -283,7 +282,7 @@ class Game:
     def get_current_player(self) -> int:
         return self.player_counter
 
-    def find_player(self, chosen_player_identifier: str) -> bool:
+    def find_player(self, chosen_player_identifier: str) -> Player | None:
         for player in self.players:
             if player._identifier == chosen_player_identifier:
                 return player
@@ -328,9 +327,8 @@ class Game:
         raise NotImplementedError()
 
     def _new_round(self) -> None:
-        check_if_spy_worked(self)
+        self.check_if_spy_worked()
         for player in self.players:
-            player.is_protected = False
             player.is_killed = False
             player.is_protected = False
 
