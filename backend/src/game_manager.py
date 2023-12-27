@@ -3,7 +3,7 @@ from collections import defaultdict
 from fastapi import WebSocket, WebSocketDisconnect
 
 from src.custom_types import GameStatus
-from src.game import Game
+from src.core.game import Game
 
 
 class GameManager:
